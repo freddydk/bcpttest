@@ -8,6 +8,9 @@
     },
     {
       "path": "MyApp.Test"
+    },
+    {
+      "path": "MyApp.PerformanceTest"
     }
   ],
   "settings": {}
