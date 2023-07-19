@@ -1,5 +1,5 @@
 {
   "type": "PTE",
-  "templateUrl": "https://github.com/freddydk/AL-Go@securityfix",
+  "templateUrl": "https://github.com/freddydk/AL-Go@ShellTest",
   "xgitHubRunnerShell": "cmd"
 }
