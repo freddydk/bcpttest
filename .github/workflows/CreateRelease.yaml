@@ -66,14 +66,14 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: freddydk/AL-Go/Actions/WorkflowInitialize@bcptreport
+        uses: freddydk/AL-Go/Actions/WorkflowInitialize@securityfix
         with:
           shell: powershell
           eventId: "DO0094"
 
       - name: Read settings
         id: ReadSettings
-        uses: freddydk/AL-Go/Actions/ReadSettings@bcptreport
+        uses: freddydk/AL-Go/Actions/ReadSettings@securityfix
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -81,12 +81,12 @@ jobs:
 
       - name: Determine Projects
         id: determineProjects
-        uses: freddydk/AL-Go/Actions/DetermineProjectsToBuild@bcptreport
+        uses: freddydk/AL-Go/Actions/DetermineProjectsToBuild@securityfix
         with:
           shell: powershell
 
       - name: Check for updates to AL-Go system files
-        uses: freddydk/AL-Go/Actions/CheckForUpdates@bcptreport
+        uses: freddydk/AL-Go/Actions/CheckForUpdates@securityfix
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -171,7 +171,7 @@ jobs:
 
       - name: Prepare release notes
         id: createreleasenotes
-        uses: freddydk/AL-Go/Actions/CreateReleaseNotes@bcptreport
+        uses: freddydk/AL-Go/Actions/CreateReleaseNotes@securityfix
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -214,13 +214,13 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Read settings
-        uses: freddydk/AL-Go/Actions/ReadSettings@bcptreport
+        uses: freddydk/AL-Go/Actions/ReadSettings@securityfix
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ needs.CreateRelease.outputs.telemetryScopeJson }}
 
       - name: Read secrets
-        uses: freddydk/AL-Go/Actions/ReadSecrets@bcptreport
+        uses: freddydk/AL-Go/Actions/ReadSecrets@securityfix
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -272,7 +272,7 @@ jobs:
           Add-Content -Path $env:GITHUB_OUTPUT -Value "nuGetContext=$nuGetContext"
 
       - name: Deliver to NuGet
-        uses: freddydk/AL-Go/Actions/Deliver@bcptreport
+        uses: freddydk/AL-Go/Actions/Deliver@securityfix
         if: ${{ steps.nuGetContext.outputs.nuGetContext }}
         env:
           deliveryContext: ${{ steps.nuGetContext.outputs.nuGetContext }}
@@ -297,7 +297,7 @@ jobs:
           Add-Content -Path $env:GITHUB_OUTPUT -Value "storageContext=$storageContext"
 
       - name: Deliver to Storage
-        uses: freddydk/AL-Go/Actions/Deliver@bcptreport
+        uses: freddydk/AL-Go/Actions/Deliver@securityfix
         if: ${{ steps.storageContext.outputs.storageContext }}
         env:
           deliveryContext: ${{ steps.storageContext.outputs.storageContext }}
@@ -335,7 +335,7 @@ jobs:
     needs: [ CreateRelease, UploadArtifacts ]
     steps:
       - name: Update Version Number
-        uses: freddydk/AL-Go/Actions/IncrementVersionNumber@bcptreport
+        uses: freddydk/AL-Go/Actions/IncrementVersionNumber@securityfix
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ needs.CreateRelease.outputs.telemetryScopeJson }}
@@ -352,7 +352,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: freddydk/AL-Go/Actions/WorkflowPostProcess@bcptreport
+        uses: freddydk/AL-Go/Actions/WorkflowPostProcess@securityfix
         with:
           shell: powershell
           eventId: "DO0094"

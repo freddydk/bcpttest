@@ -35,14 +35,14 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: freddydk/AL-Go/Actions/WorkflowInitialize@bcptreport
+        uses: freddydk/AL-Go/Actions/WorkflowInitialize@securityfix
         with:
           shell: powershell
           eventId: "DO0099"
 
       - name: Read settings
         id: ReadSettings
-        uses: freddydk/AL-Go/Actions/ReadSettings@bcptreport
+        uses: freddydk/AL-Go/Actions/ReadSettings@securityfix
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -54,7 +54,7 @@ jobs:
           
       - name: Determine Projects To Build
         id: determineProjectsToBuild
-        uses: freddydk/AL-Go/Actions/DetermineProjectsToBuild@bcptreport
+        uses: freddydk/AL-Go/Actions/DetermineProjectsToBuild@securityfix
         with:
           shell: powershell
           maxBuildDepth: ${{ env.workflowDepth }}
@@ -90,7 +90,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: freddydk/AL-Go/Actions/WorkflowPostProcess@bcptreport
+        uses: freddydk/AL-Go/Actions/WorkflowPostProcess@securityfix
         with:
           shell: powershell
           eventId: "DO0099"
