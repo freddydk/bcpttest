@@ -44,6 +44,7 @@ jobs:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           get: keyVaultName,ghTokenWorkflowSecretName,templateUrl
+          useBase64: 'Y'
 
       - name: Read secrets
         uses: freddydk/AL-Go/Actions/ReadSecrets@SettingsEnv
