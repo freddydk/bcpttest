@@ -35,6 +35,9 @@ on:
         description: Direct COMMIT (Y/N)
         required: false
         default: 'N'
+      useGhTokenWorkflow:
+        description: Use GhTokenWorkflow for Pull Request/COMMIT
+        type: boolean
 
 permissions:
   contents: write
@@ -66,14 +69,14 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: freddydk/AL-Go/Actions/WorkflowInitialize@bcptreport
+        uses: freddydk/AL-Go/Actions/WorkflowInitialize@SettingsEnv
         with:
           shell: powershell
           eventId: "DO0094"
 
       - name: Read settings
         id: ReadSettings
-        uses: freddydk/AL-Go/Actions/ReadSettings@bcptreport
+        uses: freddydk/AL-Go/Actions/ReadSettings@SettingsEnv
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -81,12 +84,12 @@ jobs:
 
       - name: Determine Projects
         id: determineProjects
-        uses: freddydk/AL-Go/Actions/DetermineProjectsToBuild@bcptreport
+        uses: freddydk/AL-Go/Actions/DetermineProjectsToBuild@SettingsEnv
         with:
           shell: powershell
 
       - name: Check for updates to AL-Go system files
-        uses: freddydk/AL-Go/Actions/CheckForUpdates@bcptreport
+        uses: freddydk/AL-Go/Actions/CheckForUpdates@SettingsEnv
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -95,8 +98,7 @@ jobs:
       - name: Analyze Artifacts
         id: analyzeartifacts
         run: |
-          $ErrorActionPreference = "STOP"
-          Set-StrictMode -version 2.0
+          $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
           $projects = '${{ steps.determineProjects.outputs.ProjectsJson }}' | ConvertFrom-Json
           Write-Host "projects:"
           $projects | ForEach-Object { Write-Host "- $_" }
@@ -171,7 +173,7 @@ jobs:
 
       - name: Prepare release notes
         id: createreleasenotes
-        uses: freddydk/AL-Go/Actions/CreateReleaseNotes@bcptreport
+        uses: freddydk/AL-Go/Actions/CreateReleaseNotes@SettingsEnv
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -214,25 +216,25 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Read settings
-        uses: freddydk/AL-Go/Actions/ReadSettings@bcptreport
+        uses: freddydk/AL-Go/Actions/ReadSettings@SettingsEnv
+        id: ReadSettings
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ needs.CreateRelease.outputs.telemetryScopeJson }}
 
       - name: Read secrets
-        uses: freddydk/AL-Go/Actions/ReadSecrets@bcptreport
+        uses: freddydk/AL-Go/Actions/ReadSecrets@SettingsEnv
         env:
           secrets: ${{ toJson(secrets) }}
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ needs.CreateRelease.outputs.telemetryScopeJson }}
-          settingsJson: ${{ env.Settings }}
+          settingsJson: ${{ steps.ReadSettings.outputs.SettingsJson }}
           secrets: 'nuGetContext,storageContext'
 
       - name: Download artifact
         run: |
-          $ErrorActionPreference = "STOP"
-          Set-StrictMode -version 2.0
+          $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
           Write-Host "Downloading artifact ${{ matrix.name}}"
           $headers = @{ 
               "Authorization" = "token ${{ github.token }}"
@@ -263,8 +265,7 @@ jobs:
         id: nuGetContext
         if: ${{ env.nuGetContext }}
         run: |
-          $ErrorActionPreference = "STOP"
-          Set-StrictMode -version 2.0
+          $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
           $nuGetContext = ''
           if ('${{ matrix.atype }}' -eq 'Apps') {
             $nuGetContext = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String([System.Environment]::GetEnvironmentVariable('nuGetContext')))
@@ -272,7 +273,7 @@ jobs:
           Add-Content -Path $env:GITHUB_OUTPUT -Value "nuGetContext=$nuGetContext"
 
       - name: Deliver to NuGet
-        uses: freddydk/AL-Go/Actions/Deliver@bcptreport
+        uses: freddydk/AL-Go/Actions/Deliver@SettingsEnv
         if: ${{ steps.nuGetContext.outputs.nuGetContext }}
         env:
           deliveryContext: ${{ steps.nuGetContext.outputs.nuGetContext }}
@@ -288,8 +289,7 @@ jobs:
         id: storageContext
         if: ${{ env.storageContext }}
         run: |
-          $ErrorActionPreference = "STOP"
-          Set-StrictMode -version 2.0
+          $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
           $storageContext = ''
           if ('${{ matrix.atype }}' -eq 'Apps') {
             $storageContext = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String([System.Environment]::GetEnvironmentVariable('storageContext')))
@@ -297,7 +297,7 @@ jobs:
           Add-Content -Path $env:GITHUB_OUTPUT -Value "storageContext=$storageContext"
 
       - name: Deliver to Storage
-        uses: freddydk/AL-Go/Actions/Deliver@bcptreport
+        uses: freddydk/AL-Go/Actions/Deliver@SettingsEnv
         if: ${{ steps.storageContext.outputs.storageContext }}
         env:
           deliveryContext: ${{ steps.storageContext.outputs.storageContext }}
@@ -321,8 +321,7 @@ jobs:
 
       - name: Create Release Branch
         run: |
-          $ErrorActionPreference = "STOP"
-          Set-StrictMode -version 2.0
+          $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
           git checkout -b ${{ needs.CreateRelease.outputs.releaseBranch }}
           git config user.name ${{ github.actor}}
           git config user.email ${{ github.actor}}@users.noreply.github.com
@@ -334,10 +333,43 @@ jobs:
     runs-on: [ windows-latest ]
     needs: [ CreateRelease, UploadArtifacts ]
     steps:
-      - name: Update Version Number
-        uses: freddydk/AL-Go/Actions/IncrementVersionNumber@bcptreport
+      - name: Read settings
+        uses: freddydk/AL-Go/Actions/ReadSettings@SettingsEnv
+        id: ReadSettings
+        if: github.event.inputs.useGhTokenWorkflow == 'true'
         with:
           shell: powershell
+          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
+          get: keyVaultName,ghTokenWorkflowSecretName
+
+      - name: Read secrets
+        uses: freddydk/AL-Go/Actions/ReadSecrets@SettingsEnv
+        if: github.event.inputs.useGhTokenWorkflow == 'true'
+        env:
+          secrets: ${{ toJson(secrets) }}
+        with:
+          shell: powershell
+          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
+          settingsJson: ${{ steps.ReadSettings.outputs.SettingsJson }}
+          secrets: 'ghTokenWorkflow=${{ env.GHTOKENWORKFLOWSECRETNAME }}'
+
+      - name: CalculateToken
+        id: CalculateToken
+        env:
+          useGhTokenWorkflow: ${{ github.event.inputs.useGhTokenWorkflow }}
+        run: |
+          if ($env:useGhTokenWorkflow -eq 'true') {
+            $ghToken = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($env:GHTOKENWORKFLOW))
+          } else {
+            $ghToken = '${{ secrets.GITHUB_TOKEN }}'
+          }
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "ghToken=$ghToken"
+
+      - name: Update Version Number
+        uses: freddydk/AL-Go/Actions/IncrementVersionNumber@SettingsEnv
+        with:
+          shell: powershell
+          token: ${{ steps.CalculateToken.outputs.ghToken }}
           parentTelemetryScopeJson: ${{ needs.CreateRelease.outputs.telemetryScopeJson }}
           versionNumber: ${{ github.event.inputs.updateVersionNumber }}
           directCommit: ${{ github.event.inputs.directCommit }}
@@ -352,7 +384,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: freddydk/AL-Go/Actions/WorkflowPostProcess@bcptreport
+        uses: freddydk/AL-Go/Actions/WorkflowPostProcess@SettingsEnv
         with:
           shell: powershell
           eventId: "DO0094"
