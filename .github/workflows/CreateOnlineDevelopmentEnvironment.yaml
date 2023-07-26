@@ -1,14 +1,10 @@
 name: ' Create Online Dev. Environment'
 
-run-name: "Create Online Dev. Environment for [${{ github.ref_name }} / ${{ github.event.inputs.project }}]"
+run-name: "Create Online Dev. Environment for [${{ github.ref_name }}]"
 
 on:
   workflow_dispatch:
     inputs:
-      project:
-        description: Project name if the repository is setup for multiple projects
-        required: false
-        default: '.'
       environmentName:
         description: Name of the online environment
         required: true
@@ -20,9 +16,6 @@ on:
         description: Direct COMMIT (Y/N)
         required: false
         default: 'N'
-      useGhTokenWorkflow:
-        description: Use GhTokenWorkflow for Pull Request/COMMIT
-        type: boolean
 
 permissions:
   contents: write
@@ -37,46 +30,43 @@ env:
   ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
 
 jobs:
-  Initialization:
+  Initialize:
     runs-on: [ windows-latest ]
     outputs:
       deviceCode: ${{ steps.authenticate.outputs.deviceCode }}
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
-      githubRunner: ${{ steps.ReadSettings.outputs.GitHubRunnerJson }}
-      githubRunnerShell: ${{ steps.ReadSettings.outputs.GitHubRunnerShell }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
       - name: Initialize the workflow
         id: init
-        uses: freddydk/AL-Go/Actions/WorkflowInitialize@SettingsEnv
+        uses: freddydk/AL-Go/Actions/WorkflowInitialize@bcptreport
         with:
           shell: powershell
           eventId: "DO0093"
 
       - name: Read settings
-        uses: freddydk/AL-Go/Actions/ReadSettings@SettingsEnv
-        id: ReadSettings
+        uses: freddydk/AL-Go/Actions/ReadSettings@bcptreport
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
-          useBase64: 'Y'
 
       - name: Read secrets
-        uses: freddydk/AL-Go/Actions/ReadSecrets@SettingsEnv
+        uses: freddydk/AL-Go/Actions/ReadSecrets@bcptreport
         env:
           secrets: ${{ toJson(secrets) }}
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
-          settingsJson: ${{ steps.ReadSettings.outputs.SettingsJson }}
+          settingsJson: ${{ env.Settings }}
           secrets: 'adminCenterApiCredentials'
 
       - name: Check AdminCenterApiCredentials / Initiate Device Login (open to see code)
         id: authenticate
         run: |
-          $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
+          $ErrorActionPreference = "STOP"
+          Set-StrictMode -version 2.0
           $adminCenterApiCredentials = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($env:adminCenterApiCredentials))
           if ($adminCenterApiCredentials) {
             Write-Host "AdminCenterApiCredentials provided in secret $($ENV:adminCenterApiCredentialsSecretName)!"
@@ -86,7 +76,7 @@ jobs:
             Write-Host "AdminCenterApiCredentials not provided, initiating Device Code flow"
             $ALGoHelperPath = "$([System.IO.Path]::GetTempFileName()).ps1"
             $webClient = New-Object System.Net.WebClient
-            $webClient.DownloadFile('https://raw.githubusercontent.com/freddydk/AL-Go/SettingsEnv/Actions/AL-Go-Helper.ps1', $ALGoHelperPath)
+            $webClient.DownloadFile('https://raw.githubusercontent.com/freddydk/AL-Go/bcptreport/Actions/AL-Go-Helper.ps1', $ALGoHelperPath)
             . $ALGoHelperPath
             $BcContainerHelperPath = DownloadAndImportBcContainerHelper -baseFolder $ENV:GITHUB_WORKSPACE
             $authContext = New-BcAuthContext -includeDeviceLogin -deviceLoginTimeout ([TimeSpan]::FromSeconds(0))
@@ -96,47 +86,30 @@ jobs:
           }
 
   CreateDevelopmentEnvironment:
-    runs-on: ${{ fromJson(needs.Initialization.outputs.githubRunner) }}
-    defaults:
-      run:
-        shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
+    runs-on: [ windows-latest ]
     name: Create Development Environment
-    needs: [ Initialization ]
+    needs: [ Initialize ]
     env:
-      deviceCode: ${{ needs.Initialization.outputs.deviceCode }}
+      deviceCode: ${{ needs.Initialize.outputs.deviceCode }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
       - name: Read settings
-        uses: freddydk/AL-Go/Actions/ReadSettings@SettingsEnv
-        id: ReadSettings
+        uses: freddydk/AL-Go/Actions/ReadSettings@bcptreport
         with:
           shell: powershell
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
-          useBase64: 'Y'
+          parentTelemetryScopeJson: ${{ needs.Initialize.outputs.telemetryScopeJson }}
 
       - name: Read secrets
-        uses: freddydk/AL-Go/Actions/ReadSecrets@SettingsEnv
+        uses: freddydk/AL-Go/Actions/ReadSecrets@bcptreport
         env:
           secrets: ${{ toJson(secrets) }}
         with:
           shell: powershell
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
-          settingsJson: ${{ steps.ReadSettings.outputs.SettingsJson }}
-          secrets: 'adminCenterApiCredentials,ghTokenWorkflow=${{ env.GHTOKENWORKFLOWSECRETNAME }}'
-
-      - name: CalculateToken
-        id: CalculateToken
-        env:
-          useGhTokenWorkflow: ${{ github.event.inputs.useGhTokenWorkflow }}
-        run: |
-          if ($env:useGhTokenWorkflow -eq 'true') {
-            $ghToken = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($env:GHTOKENWORKFLOW))
-          } else {
-            $ghToken = '${{ secrets.GITHUB_TOKEN }}'
-          }
-          Add-Content -Path $env:GITHUB_OUTPUT -Value "ghToken=$ghToken"
+          parentTelemetryScopeJson: ${{ needs.Initialize.outputs.telemetryScopeJson }}
+          settingsJson: ${{ env.Settings }}
+          secrets: 'adminCenterApiCredentials'
 
       - name: Set AdminCenterApiCredentials
         run: |
@@ -146,21 +119,19 @@ jobs:
           }
 
       - name: Create Development Environment
-        uses: freddydk/AL-Go/Actions/CreateDevelopmentEnvironment@SettingsEnv
+        uses: freddydk/AL-Go/Actions/CreateDevelopmentEnvironment@bcptreport
         with:
           shell: powershell
-          token: ${{ steps.CalculateToken.outputs.ghToken }}
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          parentTelemetryScopeJson: ${{ needs.Initialize.outputs.telemetryScopeJson }}
           environmentName: ${{ github.event.inputs.environmentName }}
-          project: ${{ github.event.inputs.project }}
           reUseExistingEnvironment: ${{ github.event.inputs.reUseExistingEnvironment }}
           directCommit: ${{ github.event.inputs.directCommit }}
           adminCenterApiCredentials: ${{ env.adminCenterApiCredentials }}
 
       - name: Finalize the workflow
         if: always()
-        uses: freddydk/AL-Go/Actions/WorkflowPostProcess@SettingsEnv
+        uses: freddydk/AL-Go/Actions/WorkflowPostProcess@bcptreport
         with:
           shell: powershell
           eventId: "DO0093"
-          telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          telemetryScopeJson: ${{ needs.Initialize.outputs.telemetryScopeJson }}

@@ -84,33 +84,30 @@ jobs:
             path: '.dependencies'
 
         - name: Read settings
-          uses: freddydk/AL-Go/Actions/ReadSettings@SettingsEnv
-          id: ReadSettings
+          uses: freddydk/AL-Go/Actions/ReadSettings@bcptreport
           with:
             shell: ${{ inputs.shell }}
             parentTelemetryScopeJson: ${{ inputs.parentTelemetryScopeJson }}
             project: ${{ inputs.project }}
-            useBase64: 'Y'
 
         - name: Read secrets
-          uses: freddydk/AL-Go/Actions/ReadSecrets@SettingsEnv
-          id: ReadSecrets
+          uses: freddydk/AL-Go/Actions/ReadSecrets@bcptreport
           env:
             secrets: ${{ toJson(secrets) }}
           with:
             shell: ${{ inputs.shell }}
             parentTelemetryScopeJson: ${{ inputs.parentTelemetryScopeJson }}
-            settingsJson: ${{ steps.ReadSettings.outputs.SettingsJson }}
+            settingsJson: ${{ env.Settings }}
             secrets: ${{ inputs.secrets }}
 
         - name: Determine ArtifactUrl
-          uses: freddydk/AL-Go/Actions/DetermineArtifactUrl@SettingsEnv
+          uses: freddydk/AL-Go/Actions/DetermineArtifactUrl@bcptreport
           id: determineArtifactUrl
           with:
             shell: ${{ inputs.shell }}
             parentTelemetryScopeJson: ${{ inputs.parentTelemetryScopeJson }}
             project: ${{ inputs.project }}
-            settingsJson: ${{ steps.ReadSecrets.outputs.SettingsJson }}
+            settingsJson: ${{ env.Settings }}
             secretsJson: ${{ env.RepoSecrets }}
 
         - name: Cache Business Central Artifacts
@@ -122,7 +119,7 @@ jobs:
 
         - name: Run pipeline
           id: RunPipeline
-          uses: freddydk/AL-Go/Actions/RunPipeline@SettingsEnv
+          uses: freddydk/AL-Go/Actions/RunPipeline@bcptreport
           env:
             BuildMode: ${{ inputs.buildMode }}
           with:
@@ -130,28 +127,28 @@ jobs:
             parentTelemetryScopeJson: ${{ inputs.parentTelemetryScopeJson }}
             project: ${{ inputs.project }}
             projectDependenciesJson: ${{ inputs.projectDependenciesJson }}
-            settingsJson: ${{ steps.determineArtifactUrl.outputs.SettingsJson }}
+            settingsJson: ${{ env.Settings }}
             secretsJson: ${{ env.RepoSecrets }}
             buildMode: ${{ inputs.buildMode }}
 
         - name: Sign
           if: inputs.signArtifacts && env.doNotSignApps == 'False' && env.keyVaultCodesignCertificateName != ''
           id: sign
-          uses: freddydk/AL-Go/Actions/Sign@SettingsEnv
+          uses: freddydk/AL-Go/Actions/Sign@bcptreport
           with:
             shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
             azureCredentialsJson: ${{ secrets.AZURE_CREDENTIALS }}
-            settingsJson: ${{ steps.determineArtifactUrl.outputs.SettingsJson }}
+            settingsJson: ${{ env.Settings }}
             pathToFiles: '${{ inputs.project }}/.buildartifacts/Apps/*.app'
             parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
 
         - name: Calculate Artifact names
           id: calculateArtifactsNames
-          uses: freddydk/AL-Go/Actions/CalculateArtifactNames@SettingsEnv
+          uses: freddydk/AL-Go/Actions/CalculateArtifactNames@bcptreport
           if: success() || failure()
           with:
             shell: ${{ inputs.shell }}
-            settingsJson: ${{ steps.determineArtifactUrl.outputs.SettingsJson }}
+            settingsJson: ${{ env.Settings }}
             project: ${{ inputs.project }}
             buildMode: ${{ inputs.buildMode }}
             branchName: ${{ github.ref_name }}
@@ -234,7 +231,7 @@ jobs:
         - name: Analyze Test Results
           id: analyzeTestResults
           if: success() || failure()
-          uses: freddydk/AL-Go/Actions/AnalyzeTests@SettingsEnv
+          uses: freddydk/AL-Go/Actions/AnalyzeTests@bcptreport
           with:
             shell: ${{ inputs.shell }}
             parentTelemetryScopeJson: ${{ inputs.parentTelemetryScopeJson }}
@@ -242,7 +239,7 @@ jobs:
 
         - name: Cleanup
           if: always()
-          uses: freddydk/AL-Go/Actions/PipelineCleanup@SettingsEnv
+          uses: freddydk/AL-Go/Actions/PipelineCleanup@bcptreport
           with:
             shell: ${{ inputs.shell }}
             parentTelemetryScopeJson: ${{ inputs.parentTelemetryScopeJson }}

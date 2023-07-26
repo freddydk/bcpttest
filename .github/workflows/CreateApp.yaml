@@ -26,9 +26,6 @@ on:
         description: Direct COMMIT (Y/N)
         required: false
         default: "N"
-      useGhTokenWorkflow:
-        description: Use GhTokenWorkflow for Pull Request/COMMIT
-        type: boolean
 
 permissions:
   contents: write
@@ -51,48 +48,22 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: freddydk/AL-Go/Actions/WorkflowInitialize@SettingsEnv
+        uses: freddydk/AL-Go/Actions/WorkflowInitialize@bcptreport
         with:
           shell: powershell
           eventId: "DO0092"
 
       - name: Read settings
-        uses: freddydk/AL-Go/Actions/ReadSettings@SettingsEnv
-        id: ReadSettings
+        uses: freddydk/AL-Go/Actions/ReadSettings@bcptreport
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
-          get: type,keyVaultName,ghTokenWorkflowSecretName
-          useBase64: 'Y'
-
-      - name: Read secrets
-        uses: freddydk/AL-Go/Actions/ReadSecrets@SettingsEnv
-        if: github.event.inputs.useGhTokenWorkflow == 'true'
-        env:
-          secrets: ${{ toJson(secrets) }}
-        with:
-          shell: powershell
-          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
-          settingsJson: ${{ steps.ReadSettings.outputs.SettingsJson }}
-          secrets: 'ghTokenWorkflow=${{ env.GHTOKENWORKFLOWSECRETNAME }}'
-
-      - name: CalculateToken
-        id: CalculateToken
-        env:
-          useGhTokenWorkflow: ${{ github.event.inputs.useGhTokenWorkflow }}
-        run: |
-          if ($env:useGhTokenWorkflow -eq 'true') {
-            $ghToken = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($env:GHTOKENWORKFLOW))
-          } else {
-            $ghToken = '${{ secrets.GITHUB_TOKEN }}'
-          }
-          Add-Content -Path $env:GITHUB_OUTPUT -Value "ghToken=$ghToken"
+          get: type
 
       - name: Creating a new app
-        uses: freddydk/AL-Go/Actions/CreateApp@SettingsEnv
+        uses: freddydk/AL-Go/Actions/CreateApp@bcptreport
         with:
           shell: powershell
-          token: ${{ steps.CalculateToken.outputs.ghToken }}
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           project: ${{ github.event.inputs.project }}
           type: ${{ env.type }}
@@ -104,7 +75,7 @@ jobs:
 
       - name: Finalize the workflow
         if: always()
-        uses: freddydk/AL-Go/Actions/WorkflowPostProcess@SettingsEnv
+        uses: freddydk/AL-Go/Actions/WorkflowPostProcess@bcptreport
         with:
           shell: powershell
           eventId: "DO0092"
