@@ -1,5 +1,5 @@
 {
   "type": "PTE",
   "templateUrl": "https://github.com/freddydk/AL-Go@bcptreport",
-  "vsixFile": "https://ms-dynamics-smb.gallerycdn.vsassets.io/extensions/ms-dynamics-smb/al/12.0.836604/1689762022866/Microsoft.VisualStudio.Services.VSIXPackage"
+  "vsixFile": "preview"
 }
