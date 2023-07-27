@@ -4,6 +4,49 @@ This template repository can be used for managing Per Tenant Extensions for Busi
 
 Please consult https://github.com/microsoft/AL-Go/#readme for scenarios on usage
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 |BCPT Suite|Codeunit ID|Codeunit Name|Operation|Status|Duration|Duration (BaseLine)|SQL Stmts|SQL Stmts (BaseLine)|
 |:---|:---|:---|:---|---:|:--:|---:|---:|---:|
 |SUITE1|2|Codeunit2|Operation2|:warning:|22,00|**20,00**|**2**|3|
