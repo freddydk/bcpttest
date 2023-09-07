@@ -2,5 +2,7 @@
   "type": "PTE",
   "templateUrl": "https://github.com/freddydk/AL-Go@bcptreport",
   "vsixFile": "preview",
-  "excludeEnvironments": [ "test" ]
+  "excludeEnvironments": [
+    "test"
+  ]
 }
