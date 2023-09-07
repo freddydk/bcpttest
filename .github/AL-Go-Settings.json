@@ -1,5 +1,6 @@
 {
   "type": "PTE",
   "templateUrl": "https://github.com/freddydk/AL-Go@bcptreport",
-  "vsixFile": "preview"
+  "vsixFile": "preview",
+  "excludeEnvironments": [ "test" ]
 }
