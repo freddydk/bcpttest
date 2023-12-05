@@ -4,5 +4,6 @@
   "vsixFile": "preview",
   "excludeEnvironments": [
     "test"
-  ]
+  ],
+  "templateSha": "b94fb8f4f88e721acad7b8e5fd2b594e6500df59"
 }
