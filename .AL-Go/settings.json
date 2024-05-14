@@ -3,5 +3,6 @@
   "appFolders": [],
   "testFolders": [],
   "bcptTestFolders": [],
-  "repoVersion": "6.0"
+  "repoVersion": "6.0",
+  "artifact": "//23.5//latest"
 }
