@@ -1,9 +1,9 @@
 {
   "type": "PTE",
-  "templateUrl": "https://github.com/freddydk/AL-Go@bcptreport",
+  "templateUrl": "https://github.com/freddydk/AL-Go@nuget",
   "vsixFile": "preview",
   "excludeEnvironments": [
     "test"
   ],
-  "templateSha": "cc0fb64a5db97ee435655477fce39dbbca2cb61f"
+  "templateSha": "53ef60ecec7934aca3fda403ada17beaaa1352bc"
 }
