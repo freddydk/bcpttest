@@ -1,9 +1,9 @@
 {
   "type": "PTE",
-  "templateUrl": "https://github.com/microsoft/AL-Go-PTE@main",
+  "templateUrl": "https://github.com/microsoft/AL-Go-PTE@preview",
   "vsixFile": "preview",
   "excludeEnvironments": [
     "test"
   ],
-  "templateSha": "72f3223b6a153cd1fae540f5d7388842e2f9ac1e"
+  "templateSha": "becb26e1f895fb75145bbc10535afb19c09bff5c"
 }
