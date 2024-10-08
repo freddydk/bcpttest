@@ -1,10 +1,10 @@
 {
   "type": "PTE",
-  "templateUrl": "https://github.com/microsoft/AL-Go-PTE@preview",
+  "templateUrl": "https://github.com/freddydk/AL-Go@pagescript",
   "vsixFile": "preview",
   "excludeEnvironments": [
     "test"
   ],
-  "templateSha": "becb26e1f895fb75145bbc10535afb19c09bff5c",
+  "templateSha": "8cbae637abb05588482ee15c26d96762a2456a69",
   "gitHubRunnerShell": "pwsh"
 }
