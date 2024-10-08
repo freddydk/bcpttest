@@ -5,5 +5,6 @@
   "bcptTestFolders": [],
   "pageScriptingTests": [ "Recordings/*.yml" ],
   "repoVersion": "6.0",
-  "artifact": "//24.5//latest"
+  "artifact": "//24.5//latest",
+  "restoreDatabases": [ "BeforePageScriptingTests" ]
 }
