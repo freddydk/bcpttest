@@ -5,6 +5,6 @@
   "excludeEnvironments": [
     "test"
   ],
-  "templateSha": "6e7db8761e647fe6a025d367764bf3851f93302f",
+  "templateSha": "a0097daa9cd5e6137a6bf3d24eae40d045eb2adc",
   "gitHubRunnerShell": "pwsh"
 }
