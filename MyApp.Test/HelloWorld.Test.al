@@ -6,7 +6,7 @@ codeunit 50050 "HelloWorld Test"
     [HandlerFunctions('HelloWorldMessageHandler')]
     procedure TestHelloWorldMessage()
     var
-        CustList: TestPage "Customer List";
+        CustList: TestPage "Vendor List";
     begin
         CustList.OpenView();
         CustList.Close();
