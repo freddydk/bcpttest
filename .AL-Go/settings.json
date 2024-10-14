@@ -3,7 +3,7 @@
   "appFolders": [],
   "testFolders": [],
   "bcptTestFolders": [],
-  "pageScriptingTests": [ "Recordings/*.yml" ],
+  "pageScriptingTests": [ "Recordings/" ],
   "repoVersion": "6.0",
   "artifact": "//24.5//latest",
   "restoreDatabases": [ "BeforePageScriptingTests" ]
