@@ -6,7 +6,5 @@
   "pageScriptingTests": [ "Recordings" ],
   "repoVersion": "6.0",
   "artifact": "//24.5//latest",
-  "restoreDatabases": [ "BeforePageScriptingTests" ],
-  "installTestLibraries": true,
-  "installTestApps": [ ":C:\\Applications.US\\Microsoft_Tests-ERM_*.app" ]
+  "restoreDatabases": [ "BeforePageScriptingTests" ]
 }
