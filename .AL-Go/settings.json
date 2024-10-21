@@ -8,5 +8,5 @@
   "artifact": "//24.5//latest",
   "restoreDatabases": [ "BeforePageScriptingTests" ],
   "installTestLibraries": true,
-  "installTestApps": [ ":C:\Applications.US\Microsoft_Tests-ERM_*.app" ]
+  "installTestApps": [ ":C:\\Applications.US\\Microsoft_Tests-ERM_*.app" ]
 }
