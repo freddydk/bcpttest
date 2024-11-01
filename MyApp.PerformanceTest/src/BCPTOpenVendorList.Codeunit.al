@@ -1,4 +1,8 @@
-codeunit 60015 "BCPT Open Vendor List"
+namespace System.Test.Tooling;
+
+using Microsoft.Purchases.Vendor;
+
+codeunit 50015 "BCPT Open Vendor List"
 {
     // Test codeunits can only run in foreground (UI)
     Subtype = Test;

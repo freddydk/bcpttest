@@ -1,4 +1,8 @@
-codeunit 60014 "BCPT Open Sales Invoice List"
+namespace System.Test.Tooling;
+
+using Microsoft.Sales.Document;
+
+codeunit 50014 "BCPT Open Sales Invoice List"
 {
     // Test codeunits can only run in foreground (UI)
     Subtype = Test;

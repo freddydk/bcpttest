@@ -1,4 +1,8 @@
-codeunit 60009 "BCPT Open Chart of Accounts"
+namespace System.Test.Tooling;
+
+using Microsoft.Finance.GeneralLedger.Account;
+
+codeunit 50009 "BCPT Open Chart of Accounts"
 {
     // Test codeunits can only run in foreground (UI)
     Subtype = Test;

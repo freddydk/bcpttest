@@ -1,4 +1,8 @@
-codeunit 60010 "BCPT Open Customer List"
+namespace System.Test.Tooling;
+
+using Microsoft.Sales.Customer;
+
+codeunit 50010 "BCPT Open Customer List"
 {
     // Test codeunits can only run in foreground (UI)
     Subtype = Test;

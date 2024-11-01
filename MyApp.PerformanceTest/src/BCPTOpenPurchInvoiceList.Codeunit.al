@@ -1,4 +1,8 @@
-codeunit 60012 "BCPT Open Purch. Invoice List"
+namespace System.Test.Tooling;
+
+using Microsoft.Purchases.Document;
+
+codeunit 50012 "BCPT Open Purch. Invoice List"
 {
     // Test codeunits can only run in foreground (UI)
     Subtype = Test;

@@ -1,9 +1,16 @@
-codeunit 60020 "BCPT Post Item Journal"
+namespace System.Test.Tooling;
+
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Posting;
+
+codeunit 50020 "BCPT Post Item Journal"
 {
     SingleInstance = true;
 
     trigger OnRun();
-    var
     begin
         PostItemJournal();
     end;
@@ -24,7 +31,7 @@ codeunit 60020 "BCPT Post Item Journal"
         Item: Record Item;
     begin
         if not Item.get('70000') then
-            Item.FindSet();
+            Item.FindFirst();
 
         CreateItemJournalLine(ItemJournalLine, Item."No.");
     end;
@@ -60,7 +67,7 @@ codeunit 60020 "BCPT Post Item Journal"
     procedure CreateItemJnlLineWithNoItem(var ItemJournalLine: Record "Item Journal Line"; ItemJournalBatch: Record "Item Journal Batch"; JournalTemplateName: Code[10]; JournalBatchName: Code[10]; EntryType: Enum "Item Ledger Entry Type")
     var
         NoSeries: Record "No. Series";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeriesSingle: Codeunit "No. Series";
         RecRef: RecordRef;
         DocumentNo: Code[20];
     begin
@@ -74,7 +81,7 @@ codeunit 60020 "BCPT Post Item Journal"
         ItemJournalLine.Validate("Posting Date", WorkDate());
         ItemJournalLine.Validate("Entry Type", EntryType);
         if NoSeries.Get(ItemJournalBatch."No. Series") then
-            DocumentNo := NoSeriesManagement.GetNextNo(ItemJournalBatch."No. Series", ItemJournalLine."Posting Date", false);
+            DocumentNo := NoSeriesSingle.GetNextNo(ItemJournalBatch."No. Series", ItemJournalLine."Posting Date", false);
         ItemJournalLine.Validate("Document No.", DocumentNo);
         ItemJournalLine.Modify(true);
     end;

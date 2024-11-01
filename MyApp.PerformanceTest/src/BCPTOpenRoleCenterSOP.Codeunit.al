@@ -1,4 +1,8 @@
-codeunit 60013 "BCPT Open RoleCenter SOP"
+namespace System.Test.Tooling;
+
+using Microsoft.Sales.RoleCenters;
+
+codeunit 50013 "BCPT Open RoleCenter SOP"
 {
     // Test codeunits can only run in foreground (UI)
     Subtype = Test;

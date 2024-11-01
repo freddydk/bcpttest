@@ -1,4 +1,9 @@
-codeunit 60007 "BCPT Detail Trial Bal. Report"
+namespace System.Test.Tooling;
+
+using Microsoft.Finance.GeneralLedger.Reports;
+using System.Utilities;
+
+codeunit 50007 "BCPT Detail Trial Bal. Report"
 {
     trigger OnRun();
     var

@@ -1,4 +1,8 @@
-codeunit 60011 "BCPT Open Item List"
+namespace System.Test.Tooling;
+
+using Microsoft.Inventory.Item;
+
+codeunit 50011 "BCPT Open Item List"
 {
     // Test codeunits can only run in foreground (UI)
     Subtype = Test;

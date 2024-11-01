@@ -1,46 +1,58 @@
-codeunit 60004 "BCPT Create SO with N Lines" implements "BCPT Test Param. Provider"
+namespace System.Test.Tooling;
+
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Inventory.Item;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Setup;
+using System.Tooling;
+
+codeunit 50004 "BCPT Create SO with N Lines" implements "BCPT Test Param. Provider"
 {
     SingleInstance = true;
 
     trigger OnRun();
     begin
-        If not IsInitialized then begin
+        if not IsInitialized then begin
             InitTest();
             IsInitialized := true;
         end;
-        CreateSalesOrder(BCPTTestContext);
+        CreateSalesOrder(GlobalBCPTTestContext);
     end;
 
     var
-        BCPTTestContext: Codeunit "BCPT Test Context";
+        GlobalBCPTTestContext: Codeunit "BCPT Test Context";
         IsInitialized: Boolean;
         NoOfLinesToCreate: Integer;
         NoOfLinesParamLbl: Label 'Lines';
-        ParamValidationErr: Label 'Parameter is not defined in the correct format. The expected format is "%1"';
-
+        ParamValidationErr: Label 'Parameter is not defined in the correct format. The expected format is "%1"', Comment = '%1 = a string';
 
     local procedure InitTest();
     var
         SalesSetup: Record "Sales & Receivables Setup";
         NoSeriesLine: Record "No. Series Line";
+        RecordModified: Boolean;
     begin
         SalesSetup.Get();
         SalesSetup.TestField("Order Nos.");
         NoSeriesLine.SetRange("Series Code", SalesSetup."Order Nos.");
-        NoSeriesLine.findset(true, true);
+        NoSeriesLine.FindSet(true);
         repeat
             if NoSeriesLine."Ending No." <> '' then begin
                 NoSeriesLine."Ending No." := '';
-                NoSeriesLine.Validate("Allow Gaps in Nos.", true);
+                NoSeriesLine.Validate(Implementation, Enum::"No. Series Implementation"::Sequence);
                 NoSeriesLine.Modify(true);
+                RecordModified := true;
             end;
         until NoSeriesLine.Next() = 0;
-        commit();
 
-        if Evaluate(NoOfLinesToCreate, BCPTTestContext.GetParameter(NoOfLinesParamLbl)) then;
+        if RecordModified then
+            Commit();
+
+        if Evaluate(NoOfLinesToCreate, GlobalBCPTTestContext.GetParameter(NoOfLinesParamLbl)) then;
     end;
 
-    local procedure CreateSalesOrder(Var BCPTTestContext: Codeunit "BCPT Test Context")
+    local procedure CreateSalesOrder(var BCPTTestContext: Codeunit "BCPT Test Context")
     var
         Customer: Record Customer;
         Item: Record Item;
@@ -92,7 +104,9 @@ codeunit 60004 "BCPT Create SO with N Lines" implements "BCPT Test Param. Provid
             BCPTTestContext.UserWait();
             if i mod 2 = 0 then
                 if Item.Next() = 0 then
+#pragma warning disable AA0181, AA0175
                     Item.FindSet();
+#pragma warning restore AA0181, AA0175
         end;
     end;
 
