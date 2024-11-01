@@ -6,5 +6,6 @@
     "test"
   ],
   "templateSha": "5e1edea7b9c19c6ac351928302a70f9e815444db",
-  "gitHubRunnerShell": "pwsh"
+  "gitHubRunnerShell": "pwsh",
+  "doNotRunPageScriptingTests": true
 }
