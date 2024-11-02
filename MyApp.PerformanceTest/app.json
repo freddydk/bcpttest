@@ -7,7 +7,6 @@
   "description": "This extension provides tests that simulate business processes, such as creating sales orders, for the Business Central Performance Toolkit. Developers can use these to test for performance regressions during development.",
   "platform": "24.0.0.0",
   "application": "24.5.0.0",
-  "runtime": "11.1",
   "logo": "",
   "url": "",
   "EULA": "",
@@ -29,7 +28,7 @@
       "to": 99999
     }
   ],
-  "runtime": 13.0,
+  "runtime": "13.0",
   "features": [],
   "resourceExposurePolicy": {},
   "internalsVisibleTo": [],
