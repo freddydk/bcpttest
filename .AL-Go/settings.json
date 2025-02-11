@@ -3,8 +3,6 @@
   "appFolders": [],
   "testFolders": [],
   "bcptTestFolders": [],
-  "pageScriptingTests": [ "Recordings" ],
   "repoVersion": "6.0",
-  "artifact": "//24.5//latest",
-  "restoreDatabases": [ "BeforePageScriptingTests" ]
+  "artifact": "//25.3//latest"
 }
