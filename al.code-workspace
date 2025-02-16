@@ -11,6 +11,9 @@
     },
     {
       "path": "MyApp.PerformanceTest"
+    },
+    {
+      "path": "New.PerformanceTest"
     }
   ],
   "settings": {}
